@@ -1,2 +1,10 @@
 # Node.js dependencies
 node_modules/
+.env
+
+# Output of build tools
+dist/
+build/
+
+# VSCode settings
+.vscode/

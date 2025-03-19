@@ -11,7 +11,6 @@ const app = express();
 // dotenv.config();
 connectDB();
 
-connectDB();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
