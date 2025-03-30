@@ -12,6 +12,19 @@ router.post('/register/email', async (req, res) => {
          if (!name || !email || !password) {
             return res.status(400).json({ message: "Missing required fields" });
         }
+
+          // Email Validation
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+              return res.status(400).json({ message: "Invalid email format" });
+          }
+
+          const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&+=!]{8,}$/;
+          if (!passwordRegex.test(password)) {
+              return res.status(400).json({
+                  message: "Password must be at least 8 characters long and contain at least one letter and one number"
+              });
+          }
         const existingUser = await User.findOne({    // replacement for findone({email}),..so that db call goes only once
             $or: [{ email }, { name }]
         });
