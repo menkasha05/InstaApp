@@ -6,21 +6,35 @@ const router = express.Router();
 
 // Email Registration
 router.post('/register/email', async (req, res) => {
-    console.dir(req.body)
     const { name, email, password } = req.body;
     try {
-        const existingUser = await User.findOne({ email });
+         // Check for missing required fields
+         if (!name || !email || !password) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        const existingUser = await User.findOne({    // replacement for findone({email}),..so that db call goes only once
+            $or: [{ email }, { name }]
+        });
         if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+            if (existingUser.email === email) {
+                return res.status(400).json({ message: `User already exists with email: ${email}` });
+            }
+            if (existingUser.name === name) {
+                return res.status(400).json({ message: `User already exists with name: ${name}` });
+            }
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({ name, email, password: hashedPassword });
         await user.save();
-
+        console.log("User saved:", user);
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
             expiresIn: '1d'
         });
-        res.status(201).json({ token, user });
+        res.status(201).json({
+            message: "User registered successfully",
+            token,
+            user
+         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
