@@ -75,4 +75,19 @@ router.post('/register/phone', async (req, res) => {
     }
 });
 
+router.delete('/users/delete-all', async (req, res) => {
+    try {
+        const result = await User.deleteMany({});  // Deletes all documents in the "users" collection
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No users found to delete" });
+        }
+
+        res.status(200).json({ message: "All users deleted successfully", deletedCount: result.deletedCount });
+    } catch (error) {
+        console.error("Error deleting users:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 module.exports = router;
