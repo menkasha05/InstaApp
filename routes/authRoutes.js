@@ -75,6 +75,18 @@ router.post('/register/phone', async (req, res) => {
     }
 });
 
+router.post('/login',async(req,res)=>{
+    const{email,password} = req.body;
+    if(!email || !password) return res.status(400).json({
+        message:'Missing required fields!'
+    })
+    const user= await User.findOne({email})
+    if(!user || !(await bcrypt.compare(password, user.password))) return res.status(401).json({
+        message:'Invalid email or password!'
+    })
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    res.json({ message: "Login successful", token });
+})
 router.delete('/users/delete-all', async (req, res) => {
     try {
         const result = await User.deleteMany({});  // Deletes all documents in the "users" collection
