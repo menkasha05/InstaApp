@@ -85,7 +85,7 @@ router.post('/login',async(req,res)=>{
         message:'Invalid email or password!'
     })
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ message: "Login successful", token });
+    res.json({ message: "Login successful", token,user });
 })
 router.delete('/users/delete-all', async (req, res) => {
     try {
