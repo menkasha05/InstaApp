@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
+const postRoutes = require("./routes/postRoutes");
 const connectDB = require('./config/db');
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/post", postRoutes);
 
 // // Connect to MongoDB
 // mongoose
