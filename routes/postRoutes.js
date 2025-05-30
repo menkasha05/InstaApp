@@ -60,6 +60,46 @@ console.dir(posts)
   }
 });
 
+//Update api
+router.put('/update/:postId', async (req, res) => {
+    const { postId } = req.params;
+    const { caption, imageUrl, userId } = req.body;
+    try {
+        // Validate userId if provided
+        if (userId && !mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Invalid userId format' });
+        }
+
+        // Check if post exists
+        const post = await Post.findById(postId);
+    
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // If userId is changing, validate new user exists
+        if (userId && userId !== post.user.toString()) {
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            post.user = userId;
+        }
+
+        // Update fields if provided
+        if (caption) post.caption = caption;
+        if (imageUrl) post.imageUrl = imageUrl;
+
+        await post.save();
+
+        res.status(200).json({ message: 'Post updated successfully', post });
+    } catch (error) {
+        console.dir(error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+
 // DELETE /api/posts/:postId
 router.delete('/:postId', async (req, res) => {
   const { postId } = req.params;
